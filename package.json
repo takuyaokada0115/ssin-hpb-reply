@@ -1,0 +1,9 @@
+{
+  "name": "ssin-hpb-reply",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SSIN STUDIO下北沢 — HPB口コミ返信 自動生成ツール",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.114.0"
+  }
+}

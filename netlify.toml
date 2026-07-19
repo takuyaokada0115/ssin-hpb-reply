@@ -1,0 +1,10 @@
+# Netlify 設定
+# 公開ディレクトリはリポジトリ直下（index.html）。
+# 関数は netlify/functions に自動で認識されます。
+
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
