@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<meta name="robots" content="noindex" />
+<title>スタッフ日報作成 | SSIN STUDIO下北沢</title>
+<style>
+  :root {
+    --bg: #f4f1ea;
+    --card: #ffffff;
+    --ink: #2b2b2b;
+    --sub: #8a8577;
+    --line: #e6e1d6;
+    --accent: #b98a5e;
+    --accent-dark: #9c6f45;
+    --ok: #4b7f6a;
+    --warn: #b5654a;
+    --shadow: 0 8px 30px rgba(60, 50, 30, 0.08);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    line-height: 1.7;
+    padding: 24px 16px 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 560px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 22px; }
+  header .brand { font-size: 13px; letter-spacing: .18em; color: var(--accent-dark); font-weight: 700; }
+  header h1 { font-size: 20px; margin: 6px 0 4px; font-weight: 700; }
+  header p { font-size: 13px; color: var(--sub); margin: 0; }
+  .nav { text-align: center; margin-bottom: 18px; }
+  .nav a { font-size: 12px; color: var(--sub); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+  .nav a:hover { color: var(--accent-dark); }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 18px 16px;
+    margin-bottom: 16px;
+  }
+  .step { font-size: 12px; letter-spacing: .1em; color: var(--accent-dark); font-weight: 700; margin-bottom: 8px; }
+
+  label.field-label { display: block; font-size: 13px; color: var(--sub); margin: 4px 0 6px; }
+
+  input[type="date"], textarea {
+    width: 100%;
+    border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px 14px; font-size: 15px; font-family: inherit;
+    color: var(--ink); background: #fbfaf6; line-height: 1.6;
+  }
+  input[type="date"] { margin-bottom: 14px; }
+  textarea { min-height: 110px; resize: vertical; }
+  input[type="date"]:focus, textarea:focus { outline: none; border-color: var(--accent); background: #fff; }
+
+  .divider { display: flex; align-items: center; gap: 10px; margin: 14px 0; color: var(--sub); font-size: 12px; }
+  .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+  .drop {
+    border: 1.5px dashed var(--line); border-radius: 12px;
+    padding: 20px 14px; text-align: center; color: var(--sub);
+    background: #fbfaf6; cursor: pointer; transition: .15s;
+    font-size: 14px;
+  }
+  .drop.drag { border-color: var(--accent); background: #fff7ee; color: var(--accent-dark); }
+  .drop strong { color: var(--accent-dark); font-weight: 700; }
+  .drop small { display: block; margin-top: 4px; font-size: 12px; color: var(--sub); }
+  #fileInput { display: none; }
+
+  .thumbs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .thumb { position: relative; width: calc(50% - 4px); }
+  .thumb img { width: 100%; border-radius: 10px; border: 1px solid var(--line); display: block; }
+  .thumb button {
+    position: absolute; top: 6px; right: 6px;
+    background: rgba(0,0,0,.6); color: #fff; border: none;
+    width: 26px; height: 26px; border-radius: 50%; font-size: 15px; cursor: pointer; line-height: 1;
+  }
+
+  button.primary {
+    width: 100%; border: none; border-radius: 12px;
+    background: var(--accent); color: #fff; font-size: 16px; font-weight: 700;
+    padding: 15px; cursor: pointer; transition: .15s; font-family: inherit;
+    margin-top: 4px;
+  }
+  button.primary:hover { background: var(--accent-dark); }
+  button.primary:disabled { opacity: .55; cursor: default; }
+
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .chip {
+    font-size: 12px; padding: 4px 10px; border-radius: 999px;
+    background: #f3ede2; color: var(--accent-dark); border: 1px solid var(--line); font-weight: 600;
+  }
+
+  .staff-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .staff-head h2 { font-size: 16px; font-weight: 700; margin: 0; }
+  .staff-head span { font-size: 12px; color: var(--sub); white-space: nowrap; }
+  .report {
+    width: 100%; border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px 14px; font-size: 15px; line-height: 1.8; font-family: inherit;
+    background: #fbfaf6; color: var(--ink); resize: vertical;
+  }
+  .report:focus { outline: none; border-color: var(--accent); background: #fff; }
+  .row { display: flex; gap: 10px; margin-top: 10px; }
+  .row button {
+    flex: 1; border-radius: 10px; padding: 11px; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: inherit; border: 1px solid var(--line); background: #fff; color: var(--ink);
+  }
+  .row button.copy { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .row button.copy.done { background: var(--ok); border-color: var(--ok); }
+
+  .notes { font-size: 13px; color: var(--warn); background: #f7e9e4; border: 1px solid #eed5cc; border-radius: 12px; padding: 12px 14px; }
+  .notes ul { margin: 6px 0 0; padding-left: 18px; }
+
+  #loading, #error, #results { display: none; }
+  #loading { text-align: center; color: var(--sub); padding: 8px 0; font-size: 14px; }
+  .spinner {
+    width: 22px; height: 22px; border: 3px solid var(--line); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #error { color: var(--warn); background: #f7e9e4; border: 1px solid #eed5cc; border-radius: 12px; padding: 12px 14px; font-size: 14px; }
+
+  footer { text-align: center; color: var(--sub); font-size: 11px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">SSIN STUDIO 下北沢</div>
+    <h1>スタッフ日報 作成ツール</h1>
+    <p>サロンボードの予約表から、スタッフごとの日報を作成します</p>
+  </header>
+  <div class="nav"><a href="./index.html">口コミ返信 作成ツールへ</a></div>
+
+  <div class="card">
+    <div class="step">STEP 1　予約表を入力</div>
+
+    <label class="field-label" for="dateInput">日付（空欄なら予約表から自動で読み取ります）</label>
+    <input type="date" id="dateInput" />
+
+    <label class="field-label" for="boardText">予約表を貼り付け（テキスト）</label>
+    <textarea id="boardText" placeholder="サロンボードの予約一覧をコピーして貼り付けてください。"></textarea>
+
+    <div class="divider">または</div>
+
+    <div class="drop" id="drop">
+      <strong>予約表のスクリーンショットを貼り付け</strong>
+      <small>タップして画像を選択 ／ ドラッグ＆ドロップ ／ ⌘Vで貼り付け（最大4枚）</small>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" multiple />
+    <div class="thumbs" id="thumbs"></div>
+  </div>
+
+  <button class="primary" id="generateBtn">日報を作成する</button>
+
+  <div id="loading" class="card">
+    <div class="spinner"></div>
+    予約表を読み取って日報を作成しています…
+  </div>
+
+  <div id="error" class="card"></div>
+
+  <div id="results"></div>
+
+  <footer>作成された日報は送信前に必ずご確認ください。</footer>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+  const MAX_IMAGES = 4;
+
+  const boardText = $("boardText");
+  const dateInput = $("dateInput");
+  const drop = $("drop");
+  const fileInput = $("fileInput");
+  const thumbs = $("thumbs");
+  const generateBtn = $("generateBtn");
+  const loading = $("loading");
+  const errorBox = $("error");
+  const results = $("results");
+
+  let images = []; // [{ media_type, data }]
+
+  // ---- 画像の取り込み（選択 / ドロップ / 貼り付け） ----
+  function addFiles(fileList) {
+    for (const file of fileList) {
+      if (images.length >= MAX_IMAGES) {
+        showError("画像は最大" + MAX_IMAGES + "枚までです。");
+        break;
+      }
+      if (!file || !file.type.startsWith("image/")) continue;
+      const slot = images.length;
+      images.push(null); // 順番を保つための仮置き
+      resizeImage(file, 1600, (mediaType, base64) => {
+        images[slot] = { media_type: mediaType, data: base64 };
+        renderThumbs();
+      });
+    }
+  }
+
+  // 画像を縮小して base64 化（送信サイズ・コスト削減）
+  function resizeImage(file, maxSize, cb) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxSize || height > maxSize) {
+          const scale = maxSize / Math.max(width, height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width; canvas.height = height;
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+        cb("image/jpeg", dataUrl.split(",")[1]);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function renderThumbs() {
+    thumbs.innerHTML = "";
+    images.forEach((img, i) => {
+      if (!img) return;
+      const box = document.createElement("div");
+      box.className = "thumb";
+      const el = document.createElement("img");
+      el.src = "data:" + img.media_type + ";base64," + img.data;
+      el.alt = "予約表の画像 " + (i + 1);
+      const del = document.createElement("button");
+      del.type = "button";
+      del.textContent = "×";
+      del.setAttribute("aria-label", (i + 1) + "枚目の画像を削除");
+      del.addEventListener("click", () => {
+        images.splice(i, 1);
+        renderThumbs();
+      });
+      box.append(el, del);
+      thumbs.appendChild(box);
+    });
+  }
+
+  drop.addEventListener("click", () => fileInput.click());
+  fileInput.addEventListener("change", (e) => { addFiles(e.target.files); fileInput.value = ""; });
+
+  ["dragenter", "dragover"].forEach((ev) =>
+    drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("drag"); })
+  );
+  ["dragleave", "drop"].forEach((ev) =>
+    drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("drag"); })
+  );
+  drop.addEventListener("drop", (e) => {
+    if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  });
+
+  window.addEventListener("paste", (e) => {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    const files = [];
+    for (const item of items) {
+      if (item.type.startsWith("image/")) files.push(item.getAsFile());
+    }
+    if (files.length) addFiles(files);
+  });
+
+  // ---- 生成 ----
+  function setLoading(on) {
+    loading.style.display = on ? "block" : "none";
+    generateBtn.disabled = on;
+    if (on) { results.style.display = "none"; errorBox.style.display = "none"; }
+  }
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.style.display = "block";
+  }
+
+  // <input type="date"> の "2025-09-06" を "9/6" に
+  function toShortDate(value) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+    return m ? Number(m[2]) + "/" + Number(m[3]) : "";
+  }
+
+  async function generate() {
+    const text = boardText.value.trim();
+    const ready = images.filter(Boolean);
+    if (!text && ready.length === 0) {
+      showError("予約表のスクリーンショットかテキストを入力してください。");
+      return;
+    }
+    if (images.length !== ready.length) {
+      showError("画像を読み込んでいます。少し待ってからもう一度お試しください。");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch("/.netlify/functions/daily-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, images: ready, date: toShortDate(dateInput.value) }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "作成に失敗しました。");
+      renderResults(data);
+    } catch (err) {
+      showError(err.message || "通信エラーが発生しました。");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ---- 結果の表示 ----
+  function buildReport(staff, dateLabel) {
+    const lines = [staff.name];
+    if (dateLabel) lines.push(dateLabel);
+    if (!staff.reservations || staff.reservations.length === 0) {
+      lines.push("予約なし");
+    } else {
+      for (const r of staff.reservations) {
+        const customer = r.customer ? r.customer + "様　" : "";
+        lines.push((r.time + " " + customer + (r.menu || "")).trim());
+      }
+    }
+    return lines.join("\n");
+  }
+
+  function renderResults(data) {
+    results.innerHTML = "";
+    const dateLabel = toShortDate(dateInput.value) || data.date || "";
+    const staffList = Array.isArray(data.staff) ? data.staff : [];
+
+    if (staffList.length === 0) {
+      showError("予約表からスタッフを読み取れませんでした。画像がはっきり写っているかご確認ください。");
+      return;
+    }
+
+    const head = document.createElement("div");
+    head.className = "card";
+    head.innerHTML = '<div class="step">STEP 2　日報をコピーしてスタッフへ共有</div>';
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    if (dateLabel) meta.appendChild(chip("日付：" + dateLabel));
+    meta.appendChild(chip("スタッフ：" + staffList.length + "名"));
+    meta.appendChild(chip("予約：合計" + staffList.reduce((n, s) => n + (s.reservations || []).length, 0) + "件"));
+    head.appendChild(meta);
+
+    const allRow = document.createElement("div");
+    allRow.className = "row";
+    const allBtn = document.createElement("button");
+    allBtn.className = "copy";
+    allBtn.textContent = "全員分をまとめてコピー";
+    allRow.appendChild(allBtn);
+    head.appendChild(allRow);
+    results.appendChild(head);
+
+    const boxes = [];
+    for (const staff of staffList) {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const title = document.createElement("div");
+      title.className = "staff-head";
+      const h2 = document.createElement("h2");
+      h2.textContent = staff.name || "（担当者名なし）";
+      const count = document.createElement("span");
+      count.textContent = (staff.reservations || []).length + "件";
+      title.append(h2, count);
+      card.appendChild(title);
+
+      const box = document.createElement("textarea");
+      box.className = "report";
+      box.value = buildReport(staff, dateLabel);
+      box.rows = box.value.split("\n").length + 1;
+      card.appendChild(box);
+      boxes.push(box);
+
+      const row = document.createElement("div");
+      row.className = "row";
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "copy";
+      copyBtn.textContent = "この日報をコピー";
+      copyBtn.addEventListener("click", () => copyText(box.value, copyBtn, "この日報をコピー"));
+      row.appendChild(copyBtn);
+      card.appendChild(row);
+
+      results.appendChild(card);
+    }
+
+    allBtn.addEventListener("click", () =>
+      copyText(boxes.map((b) => b.value).join("\n\n"), allBtn, "全員分をまとめてコピー")
+    );
+
+    const notes = (data.notes || []).filter(Boolean);
+    if (notes.length) {
+      const card = document.createElement("div");
+      card.className = "card notes";
+      const label = document.createElement("strong");
+      label.textContent = "確認をおすすめする箇所";
+      const ul = document.createElement("ul");
+      for (const note of notes) {
+        const li = document.createElement("li");
+        li.textContent = note;
+        ul.appendChild(li);
+      }
+      card.append(label, ul);
+      results.appendChild(card);
+    }
+
+    results.style.display = "block";
+    results.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function chip(text) {
+    const el = document.createElement("span");
+    el.className = "chip";
+    el.textContent = text;
+    return el;
+  }
+
+  async function copyText(text, btn, label) {
+    try {
+      await navigator.clipboard.writeText(text);
+      btn.textContent = "コピーしました";
+      btn.classList.add("done");
+      setTimeout(() => { btn.textContent = label; btn.classList.remove("done"); }, 1800);
+    } catch {
+      showError("コピーに失敗しました。手動で選択してコピーしてください。");
+    }
+  }
+
+  generateBtn.addEventListener("click", generate);
+</script>
+</body>
+</html>

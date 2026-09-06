@@ -115,6 +115,10 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   #error { color: var(--warn); background: #f7e9e4; border: 1px solid #eed5cc; border-radius: 12px; padding: 12px 14px; font-size: 14px; }
 
+  .nav { text-align: center; margin-bottom: 18px; }
+  .nav a { font-size: 12px; color: var(--sub); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+  .nav a:hover { color: var(--accent-dark); }
+
   footer { text-align: center; color: var(--sub); font-size: 11px; margin-top: 8px; }
 </style>
 </head>
@@ -125,6 +129,7 @@
     <h1>口コミ返信 作成ツール</h1>
     <p>HPBの口コミを貼り付けると、返信文を自動で作成します</p>
   </header>
+  <div class="nav"><a href="./daily-report.html">スタッフ日報 作成ツールへ</a></div>
 
   <div class="card">
     <div class="step">STEP 1　口コミを入力</div>
