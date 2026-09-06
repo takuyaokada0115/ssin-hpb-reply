@@ -6,7 +6,7 @@ const Anthropic = require("@anthropic-ai/sdk");
 
 const client = new Anthropic(); // ANTHROPIC_API_KEY を環境変数から読み込む
 
-const MAX_IMAGES = 4;
+const MAX_IMAGES = 8; // 画面側で横長画像を分割して送るため、ファイル数より多くなる
 
 const SYSTEM = `あなたは美容サロン「SSIN STUDIO下北沢」（パリジェンヌ／まつ毛パーマ・眉毛ワックスなどのアイ＆眉サロン）の予約管理を担当するスタッフです。
 サロンボード（ホットペッパービューティーの店舗管理画面）の予約表を読み取り、スタッフごとの「その日の予約状況」を整理します。
