@@ -97,6 +97,10 @@
     background: #f3ede2; color: var(--accent-dark); border: 1px solid var(--line); font-weight: 600;
   }
 
+  .card.unassigned { border-color: var(--accent); background: #fffaf3; }
+  .card.unassigned .staff-head h2 { color: var(--accent-dark); }
+  .unassigned-note { font-size: 12px; color: var(--sub); margin: -2px 0 8px; }
+
   .staff-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
   .staff-head h2 { font-size: 16px; font-weight: 700; margin: 0; }
   .staff-head span { font-size: 12px; color: var(--sub); white-space: nowrap; }
@@ -151,7 +155,7 @@
 
     <div class="drop" id="drop">
       <strong>予約表のスクリーンショットを貼り付け</strong>
-      <small>タップして画像を選択 ／ ドラッグ＆ドロップ ／ ⌘Vで貼り付け（最大4枚）<br />担当スタッフの割り当てはこの画面から読み取ります</small>
+      <small>タップして画像を選択 ／ ドラッグ＆ドロップ ／ ⌘Vで貼り付け（最大4枚）<br />coming-soonの予約管理画面がおすすめです。横スクロール分は複数枚に分けて貼れます</small>
     </div>
     <input type="file" id="fileInput" accept="image/*" multiple />
     <div class="thumbs" id="thumbs"></div>
@@ -363,8 +367,10 @@
 
     const boxes = [];
     for (const staff of staffList) {
+      const unassigned = /FREE|未割/i.test(staff.name || "");
+
       const card = document.createElement("div");
-      card.className = "card";
+      card.className = unassigned ? "card unassigned" : "card";
 
       const title = document.createElement("div");
       title.className = "staff-head";
@@ -374,6 +380,13 @@
       count.textContent = (staff.reservations || []).length + "件";
       title.append(h2, count);
       card.appendChild(title);
+
+      if (unassigned) {
+        const note = document.createElement("div");
+        note.className = "unassigned-note";
+        note.textContent = "担当者が未割り当ての予約です。割り振ってから共有してください。";
+        card.appendChild(note);
+      }
 
       const box = document.createElement("textarea");
       box.className = "report";
