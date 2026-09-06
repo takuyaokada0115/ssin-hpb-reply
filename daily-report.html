@@ -144,14 +144,14 @@
     <label class="field-label" for="dateInput">日付（空欄なら予約表から自動で読み取ります）</label>
     <input type="date" id="dateInput" />
 
-    <label class="field-label" for="boardText">予約表を貼り付け（テキスト）</label>
-    <textarea id="boardText" placeholder="サロンボードの予約一覧をコピーして貼り付けてください。"></textarea>
+    <label class="field-label" for="boardText">予約表のテキスト／予約通知メール（任意）</label>
+    <textarea id="boardText" placeholder="サロンボードの予約一覧やCSVをコピーして貼り付けてください。&#10;coming-soonの予約通知メールを貼り付けると、「外部」で名前が出ない予約の顧客名や、「…」で切れたメニュー名を補完します。"></textarea>
 
-    <div class="divider">または</div>
+    <div class="divider">スクリーンショットと併用できます</div>
 
     <div class="drop" id="drop">
       <strong>予約表のスクリーンショットを貼り付け</strong>
-      <small>タップして画像を選択 ／ ドラッグ＆ドロップ ／ ⌘Vで貼り付け（最大4枚）</small>
+      <small>タップして画像を選択 ／ ドラッグ＆ドロップ ／ ⌘Vで貼り付け（最大4枚）<br />担当スタッフの割り当てはこの画面から読み取ります</small>
     </div>
     <input type="file" id="fileInput" accept="image/*" multiple />
     <div class="thumbs" id="thumbs"></div>
